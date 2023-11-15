@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, Patch, Post, Query } from '@nestjs/common';
 import { ClientService } from './client.service';
-import { Client, CreateClient, UpdateClient } from './entities/client.entity';
+import { CreateClientDto } from './dto/create-client.dto';
+import { UpdateClientDto } from './dto/update-client.dto';
 
 @Controller('client')
 export class ClientController {
@@ -18,17 +19,16 @@ export class ClientController {
     }
 
     @Post()
-    create(@Body() client: CreateClient) {
-        this.clientService.create(client);
+    create(@Body() createClientDto: CreateClientDto) {
+        this.clientService.create(createClientDto);
     }
 
     @Patch(":id")
-    updateById(@Param('id') id: string, @Body() updatedClient: UpdateClient) {                
-        this.clientService.updateById(updatedClient, id);
+    updateById(@Param('id') id: string, @Body() updateClientDto: UpdateClientDto) {                
+        this.clientService.updateById(updateClientDto, id);
     }
 
     @Delete(":id")
-    @HttpCode(HttpStatus.OK)
     removeById(@Param('id') id: string) {
         this.clientService.removeById(id);
     }

@@ -1,7 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Client, CreateClient, UpdateClient } from './entities/client.entity';
-import {v4 as uuidv4} from 'uuid';
-import { log } from 'console';
+import { Client } from './entities/client.entity';
+import { v4 as uuidv4 } from 'uuid';
+import { CreateClientDto } from './dto/create-client.dto';
+import { UpdateClientDto } from './dto/update-client.dto';
 
 @Injectable()
 export class ClientService {
@@ -18,18 +19,18 @@ export class ClientService {
         return client;
     }
 
-    create(client: CreateClient) {
-        this.clients.push(new Client(uuidv4(), client.name, client.age));
+    create(createClientDto: CreateClientDto) {
+        this.clients.push(Client.fromIdAndCreateClientDto(uuidv4(), createClientDto));
     }
 
-    updateById(updatedClient: UpdateClient, id: string) {
+    updateById(updateClientDto: UpdateClientDto, id: string) {
         this.checkForClientExistenceById(id);
 
         this.clients = this.clients.map(client => {
             if(client.id !== id) {
                 return client;
             }
-            return new Client(id, updatedClient.name, updatedClient.age);
+            return Client.fromIdAndUpdateClientDto(id, updateClientDto);
         });
     }
 
