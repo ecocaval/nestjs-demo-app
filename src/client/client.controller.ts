@@ -14,12 +14,7 @@ export class ClientController {
 
     @Get(":id")
     findById(@Param('id') id: string) {
-
         const client = this.clientService.findById(id);
-
-        if(!client) {
-            throw new NotFoundException();
-        }
 
         return client;  
     }
@@ -30,23 +25,16 @@ export class ClientController {
     }
 
     @Patch(":id")
-    updateById(@Param('id') id: string, @Body() updatedClient: UpdateClient) {
-        const client = this.clientService.findById(id);
-
-        if(!client) {
-            throw new NotFoundException();
-        }
+    updateById(@Param('id') id: string, @Body() updatedClient: UpdateClient) {                
+        this.clientService.findById(id);
 
         this.clientService.updateById(updatedClient, id);
     }
 
     @Delete(":id")
-    @HttpCode(HttpStatus.NO_CONTENT)
+    @HttpCode(HttpStatus.OK)
     removeById(@Param('id') id: string) {
-
-        if(!this.clientService.findById(id)) {
-            throw new NotFoundException();
-        }
+        this.clientService.findById(id);
 
         this.clientService.removeById(id);
     }
