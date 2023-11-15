@@ -3,50 +3,46 @@ import { Client } from './entities/client.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ClientService {
 
-    private clients: Client[] = [];
+    constructor(
+        @InjectRepository(Client)
+        private readonly clientRepository: Repository<Client>
+    ) {}
 
-    findAll() {
-        return this.clients;
+    async findAll() {
+        return await this.clientRepository.find();
     }
 
-    findById(id: string) {
-        const client = this.checkForClientExistenceById(id);
-
-        return client;
-    }
-
-    create(createClientDto: CreateClientDto) {
-        this.clients.push(Client.fromIdAndCreateClientDto(uuidv4(), createClientDto));
-    }
-
-    updateById(updateClientDto: UpdateClientDto, id: string) {
-        this.checkForClientExistenceById(id);
-
-        this.clients = this.clients.map(client => {
-            if(client.id !== id) {
-                return client;
-            }
-            return Client.fromIdAndUpdateClientDto(id, updateClientDto);
+    async findById(id: string) {
+        const client = await this.clientRepository.findOne({ 
+            where: { id } 
         });
-    }
-
-    removeById(id: string) {
-        this.checkForClientExistenceById(id);
-
-        this.clients = this.clients.filter(client => client.id !== id ? true : false);
-    }
-
-    checkForClientExistenceById(id: string) {
-        const client = this.clients.filter(client => client.id == id)[0];
 
         if(!client) {
             throw new NotFoundException(`The user with id ${id} was not found.`);
         }
         
         return client;
+    }
+
+    async create(createClientDto: CreateClientDto) {
+        return await this.clientRepository.save(Client.fromIdAndCreateClientDto(uuidv4(), createClientDto));
+    }
+
+    async updateById(updateClientDto: UpdateClientDto, id: string) {
+        await this.findById(id);
+
+        return await this.clientRepository.save(Client.fromIdAndUpdateClientDto(id, updateClientDto));
+    }
+
+    async removeById(id: string) {
+        const client = await this.findById(id);
+
+        await this.clientRepository.remove(client);
     }
 }
