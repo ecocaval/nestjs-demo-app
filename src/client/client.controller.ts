@@ -14,9 +14,7 @@ export class ClientController {
 
     @Get(":id")
     findById(@Param('id') id: string) {
-        const client = this.clientService.findById(id);
-
-        return client;  
+        return this.clientService.findById(id); 
     }
 
     @Post()
@@ -26,16 +24,12 @@ export class ClientController {
 
     @Patch(":id")
     updateById(@Param('id') id: string, @Body() updatedClient: UpdateClient) {                
-        this.clientService.findById(id);
-
         this.clientService.updateById(updatedClient, id);
     }
 
     @Delete(":id")
     @HttpCode(HttpStatus.OK)
     removeById(@Param('id') id: string) {
-        this.clientService.findById(id);
-
         this.clientService.removeById(id);
     }
 }

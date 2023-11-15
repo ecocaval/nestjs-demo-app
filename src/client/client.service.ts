@@ -43,7 +43,7 @@ export class ClientService {
         const client = this.clients.filter(client => client.id == id)[0];
 
         if(!client) {
-            throw new NotFoundException("The user with this id was not found.");
+            throw new NotFoundException(`The user with id ${id} was not found.`);
         }
         
         return client;
